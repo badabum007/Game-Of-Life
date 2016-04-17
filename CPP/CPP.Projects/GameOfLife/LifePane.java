@@ -49,9 +49,9 @@ public class LifePane extends JPanel {
 
   public LifeAreaInformation getAreaInformation() {
     LifeAreaInformation info = new LifeAreaInformation(lifeArea);
-    Object figures[] = areaNotation.getAll();
+    Object[] figures = areaNotation.getAll();
     int x = 0, y = 0;
-    int tempFigure[][] = null;
+    int[][] tempFigure = null;
     for (int i = 0; i < figures.length; i++) {
       tempFigure = new Form().getFigure(((Figure) figures[i]).getNumber());
       x = ((Figure) figures[i]).getX();
