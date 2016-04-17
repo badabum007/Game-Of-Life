@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.JPanel;
 
 import GameOfLifeNotation.*;
-import GameOfLifeNotation.Dot;
+import GameOfLifeNotation.Figure;
 
 /**
  * Class to draw the game board. Set the listeners for the panel
@@ -49,13 +49,15 @@ public class LifePane extends JPanel {
 
   public LifeAreaInformation getAreaInformation() {
     LifeAreaInformation info = new LifeAreaInformation(lifeArea);
-    Object dot[] = areaNotation.getAll();
+    Object figures[] = areaNotation.getAll();
     int x = 0, y = 0;
-    for (int i = 0; i < dot.length; i++) {
-      x = ((Dot) dot[i]).getX();
-      y = ((Dot) dot[i]).getY();
-      if (info.getArea()[x][y] == 1) {
-        info.getArea()[x][y] = 0;
+    int tempFigure[][] = null;
+    for (int i = 0; i < figures.length; i++) {
+      tempFigure = new Form().getFigure(((Figure) figures[i]).getNumber());
+      x = ((Figure) figures[i]).getX();
+      y = ((Figure) figures[i]).getY();
+      for (int j = 0; j < tempFigure.length; j++) {
+        lifeArea.setCell(x + tempFigure[j][1], y + tempFigure[j][0], (byte) 0);
       }
     }
     return info;
@@ -122,7 +124,6 @@ public class LifePane extends JPanel {
         int x = event.getX() / (lifeArea.getCellSize() + cellGap);
         int y = event.getY() / (lifeArea.getCellSize() + cellGap);
         if (x >= 0 && y >= 0 && x < lifeArea.getWidth() && y < lifeArea.getHeight()) {
-          areaNotation.addDot(new Dot(x, y));
           if (pressedLeft == true) {
             lifeArea.setCell(x, y, (byte) 1);
             repaint();
@@ -149,12 +150,11 @@ public class LifePane extends JPanel {
   }
 
   public void setDelay(int delay) {
-    if ((this.delay > 999 && this.delay < delay) || (this.delay < 6 && this.delay > delay)) {
+    if ((this.delay > 999 && this.delay < delay) || (this.delay < 2 && this.delay > delay))
       return;
-    }
-    else {
+    else
       this.delay = delay;
-    }
+
   }
 
   public int getDelay() {
@@ -235,53 +235,58 @@ public class LifePane extends JPanel {
   /** Thread to run the game */
   private class GameThread implements Runnable {
     public void run() {
+      int iteration = 0;
       while (theGameThread != null) {
         try {
           Thread.sleep(delay);
+          synchronized (lifeArea) {
+            lifeArea.createNextGeneration();
+            if (theBotThread != null && iteration-- == 0) {
+              new BotThread().run();
+              iteration = (int) (Math.random() * 20);
+            }
+          }
+          repaint();
         } catch (InterruptedException ex) {
           ex.printStackTrace();
         }
-        synchronized (lifeArea) {
-          lifeArea.createNextGeneration();
-        }
-        repaint();
       }
       repaint();
     }
+
   }
 
   /** Thread to run the bot */
   private class BotThread implements Runnable {
 
-    public BotThread() {
-      areaNotation = new LifeAreaNotation();
-    }
-
     public void run() {
-      while (theBotThread != null) {
-        try {
-          Thread.sleep(delay);
-        } catch (InterruptedException ex) {
-          ex.printStackTrace();
-        }
+      if (theGameThread != null) {
         synchronized (lifeArea) {
-          System.out.println("x");
-          int X = (int) (lifeArea.getWidth() * Math.random());
-          int Y = (int) (lifeArea.getHeight() * Math.random());
-          lifeArea.setCell(X, Y, (byte) 1);
-          areaNotation.addDot(new Dot(X, Y));
+          paintFigure();
         }
-        repaint();
+      }
+      if (theGameThread == null) {
+        while (theBotThread != null) {
+          try {
+            Thread.sleep(delay);
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+          synchronized (lifeArea) {
+            Figure f = paintFigure();
+            areaNotation.addFigure(f);
+          }
+          repaint();
+        }
       }
       repaint();
     }
-
   }
 
   private class SavedBotThread implements Runnable {
     public void run() {
-      int x = 0, y = 0;
-      Dot dot = null;
+      int x = 0, y = 0, number = 0;
+      Figure figure = null;
       if (areaNotation == null)
         return;
       while (theSavedBotThread != null) {
@@ -293,16 +298,41 @@ public class LifePane extends JPanel {
           ex.printStackTrace();
         }
         synchronized (lifeArea) {
-          System.out.println("x");
-          dot = areaNotation.popDot();
-          x = dot.getX();
-          y = dot.getY();
-          lifeArea.setCell(x, y, (byte) 1);
+          figure = areaNotation.popFigure();
+          x = figure.getX();
+          y = figure.getY();
+          number = figure.getNumber();
+          paintFigure(x, y, number);
         }
         repaint();
       }
       repaint();
     }
 
+  }
+
+  public Figure paintFigure() {
+    Form form = new Form();
+    int tempFigure[][] = null, number = 0;
+    int x = (int) (Math.random() * lifeArea.getWidth()) - 5;
+    int y = (int) (Math.random() * lifeArea.getHeight()) - 5;
+    number = (int) (Math.random() * form.count);
+    tempFigure = form.getFigure(number);
+    x = x < 0 ? x * (-1) : x;
+    y = y < 0 ? y * (-1) : y;
+    for (int i = 0; i < tempFigure.length; i++) {
+      lifeArea.setCell(x + tempFigure[i][1], y + tempFigure[i][0], (byte) 1);
+    }
+    return new Figure(x, y, number);
+  }
+
+  public void paintFigure(int x, int y, int number) {
+    Form form = new Form();
+    int tempFigure[][] = null;
+    tempFigure = form.getFigure(number);
+    x = x < 0 ? x * (-1) : x;
+    y = y < 0 ? y * (-1) : y;
+    for (int i = 0; i < tempFigure.length; i++)
+      lifeArea.setCell(x + tempFigure[i][1], y + tempFigure[i][0], (byte) 1);
   }
 }

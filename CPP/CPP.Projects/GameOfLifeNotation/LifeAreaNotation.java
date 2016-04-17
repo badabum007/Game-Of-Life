@@ -4,37 +4,39 @@ import java.util.ArrayDeque;
 
 /** Class-notaton for Game Of Life */
 public class LifeAreaNotation {
-  ArrayDeque<Dot> dotList = new ArrayDeque<Dot>();
+  ArrayDeque<Figure> figureList = new ArrayDeque<Figure>();
   
   /** Adds the coordinates in the array 
    * @param dot coordinates if alive cell
    * */
-  public void addDot(Dot dot) {
-    dotList.addLast(dot);
+  public void addFigure(Figure dot) {
+    figureList.addLast(dot);
   }
 
   /** Pop the coordinates from array 
    * @return dot coordinates if alive cell
    * */
-  public Dot popDot() {
-    return dotList.pop();
+  public Figure popFigure() {
+    return figureList.pop();
   }
 
   /** Return array of dots
    * @return dotList.toArray() array of dots
    * */
   public Object[] getAll() {
-    return dotList.toArray();
+    return figureList.toArray();
   }
 
   /** Clean array */
   public void clear() {
-    dotList.clear();
+    figureList.clear();
   }
 
-  /** Check empty array */
+  /** Check empty array 
+   * @return bool is DitList empty
+   * */
   public boolean isEmpty() {
-    return dotList.isEmpty();
+    return figureList.isEmpty();
   }
 
 }

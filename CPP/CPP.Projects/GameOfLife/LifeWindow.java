@@ -4,13 +4,19 @@ package GameOfLife;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Random;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import GameOfLifeNotation.Dot;
+import GameInformation.GameInfo;
+import GameInformation.JavaSort;
+import GameInformation.ScalaSort;
+import GameInformation.SortTable;
+import GameOfLifeNotation.Figure;
 import GameOfLifeNotation.LifeAreaInformation;
 import GameOfLifeNotation.LifeAreaNotation;
+
 /** Class render the window contents */
 public class LifeWindow {
 
@@ -21,10 +27,16 @@ public class LifeWindow {
   private JMenuItem startStopBotButton = null;
   private JMenuItem startStopSavedBotButton = null;
   private JMenuItem clearButton = null;
+  private JMenuItem javaSortButton = null;
+  private JMenuItem scalaSortButton = null;
   private JLabel delay = null;
   private LifeAreaNotation areaNotation = null;
-  
-  /** It draws the window and associates it with listeners */
+
+  /**
+   * It draws the window and associates it with listeners
+   * 
+   * @param title window title
+   */
   public LifeWindow(String title) {
     frame = new JFrame(title);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -118,6 +130,16 @@ public class LifeWindow {
     menuSettings.add(itemLookAndFeel);
     menuBar.add(menuSettings);
 
+    JMenu statistics = new JMenu("Statistics");
+    javaSortButton = new JMenuItem("Sort in Java");
+    javaSortButton.addActionListener(new JavaSortButtonListener());
+    scalaSortButton = new JMenuItem("Sort in Scala");
+    scalaSortButton.addActionListener(new ScalaSortButtonListener());
+    statistics.add(javaSortButton);
+    statistics.add(scalaSortButton);
+    menuBar.add(statistics);
+
+
     delay = new JLabel();
     delay.setText("  Delay:" + lifePane.getDelay());
     menuBar.add(delay);
@@ -127,23 +149,44 @@ public class LifeWindow {
     frame.pack();
     frame.setVisible(true);
   }
+
   /** Start/stop game thread */
   private class StartStopButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
       if (lifePane.isGameSimulating()) {
         lifePane.stopSimulation();
-        startStopBotButton.setEnabled(true);
         startStopSavedBotButton.setEnabled(true);
         startStopButton.setText("Start");
       } else {
         lifePane.startSimulation();
-        startStopBotButton.setEnabled(false);
         startStopSavedBotButton.setEnabled(false);
         startStopButton.setText("Stop");
       }
     }
   }
+
   /** Start/stop botgame thread */
+  private class StartStopBotButtonListener implements ActionListener {
+    public void actionPerformed(ActionEvent event) {
+      if (lifePane.isBotSimulating()) {
+        lifePane.stopBot();
+        if (lifePane.isGameSimulating() == false) {
+          startStopButton.setEnabled(true);
+        }
+        startStopSavedBotButton.setEnabled(true);
+        startStopBotButton.setText("Start bot");
+      } else {
+        lifePane.startBot();
+        if (lifePane.isGameSimulating() == false) {
+          startStopButton.setEnabled(false);
+        }
+        startStopSavedBotButton.setEnabled(false);
+        startStopBotButton.setText("Stop bot");
+      }
+    }
+  }
+
+  /** Start/stop saved botgame thread */
   private class StartStopSavedBotButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
       if (areaNotation == null)
@@ -162,22 +205,7 @@ public class LifeWindow {
     }
   }
 
-  /** Start/stop saved botgame thread */
-  private class StartStopBotButtonListener implements ActionListener {
-    public void actionPerformed(ActionEvent event) {
-      if (lifePane.isBotSimulating()) {
-        lifePane.stopBot();
-        startStopButton.setEnabled(true);
-        startStopSavedBotButton.setEnabled(true);
-        startStopBotButton.setText("Start bot");
-      } else {
-        lifePane.startBot();
-        startStopButton.setEnabled(false);
-        startStopSavedBotButton.setEnabled(false);
-        startStopBotButton.setText("Stop bot");
-      }
-    }
-  }
+
   /** Clearing gamefield */
   private class ClearButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
@@ -237,17 +265,18 @@ public class LifeWindow {
           fileWriter.write(":");
           fileWriter.write(Integer.toString(lifePane.getLifeArea().getHeight()));
           fileWriter.write("\n");
-          Dot dot = null;
+          Figure figure = null;
           while (lifePane.getAreaNotation().isEmpty() == false) {
-            dot = lifePane.getAreaNotation().popDot();
-            fileWriter.write(Integer.toString(dot.getX()));
+            figure = lifePane.getAreaNotation().popFigure();
+            fileWriter.write(Integer.toString(figure.getX()));
             fileWriter.write("/");
-            fileWriter.write(Integer.toString(dot.getY()));
+            fileWriter.write(Integer.toString(figure.getY()));
+            fileWriter.write("/");
+            fileWriter.write(Integer.toString(figure.getNumber()));
             fileWriter.write("\n");
           }
           fileWriter.write("");
 
-          // lifePane.clearNotation();
           fileWriter.close();
           objectStream.close();
         }
@@ -258,7 +287,7 @@ public class LifeWindow {
       }
     }
   }
-  /** Openinging saved game */
+  /** Opening saved game */
   private class OpenButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
       synchronized (lifePane.getLifeArea()) {
@@ -318,7 +347,7 @@ public class LifeWindow {
           areaNotation = new LifeAreaNotation();
           BufferedReader reader = new BufferedReader(new FileReader(notation));
           String tempStr = null;
-          String coordinates[] = new String[2];
+          String coordinates[] = new String[3];
           tempStr = reader.readLine();
           while (true) {
             tempStr = reader.readLine();
@@ -327,7 +356,8 @@ public class LifeWindow {
             coordinates = tempStr.split("/");
             int x = Integer.parseInt(coordinates[0]);
             int y = Integer.parseInt(coordinates[1]);
-            areaNotation.addDot(new Dot(x, y));
+            int number = Integer.parseInt(coordinates[2]);
+            areaNotation.addFigure(new Figure(x, y, number));
           }
           reader.close();
           objectStream.close();
@@ -433,14 +463,82 @@ public class LifeWindow {
       try {
         if (event.getActionCommand() == "System") {
           UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+          SwingUtilities.updateComponentTreeUI(frame);
         } else {
           MetalLookAndFeel look = new MetalLookAndFeel();
+          SwingUtilities.updateComponentTreeUI(frame);
           UIManager.setLookAndFeel(look);
         }
       } catch (Exception ex) {
       }
     }
   }
+
+  private static final FilenameFilter filter = new FilenameFilter() {
+    public boolean accept(File pathname, String name) {
+      String temp = name.toLowerCase();
+      if (temp.endsWith(".not")) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
+
+  private class JavaSortButtonListener implements ActionListener {
+    public void actionPerformed(ActionEvent event) {
+      int figureCount = 0;
+      String path = "C:\\Users\\Матвей\\Documents\\GameOfLifeFields\\Bot";
+      File[] files = new File(path).listFiles(filter);
+      GameInfo[] gameInfo = new GameInfo[files.length];
+      try {
+        for (int i = 0; i < files.length; i++) {
+          String fileName = files[i].getName();
+          BufferedReader reader = new BufferedReader(new FileReader(files[i]));
+          while (reader.readLine() != null) {
+            figureCount++;
+          }
+          gameInfo[i] = new GameInfo(fileName, figureCount);
+          figureCount = 0;
+        }
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }
+      long time = System.currentTimeMillis();
+      new JavaSort().qSort(gameInfo, 0, gameInfo.length - 1);
+      time = time - System.currentTimeMillis();
+      new SortTable(gameInfo, Long.toString(time));
+
+    }
+  }
+
+  private class ScalaSortButtonListener implements ActionListener {
+    public void actionPerformed(ActionEvent event) {
+      int figureCount = 0;
+      String path = "C:\\Users\\Матвей\\Documents\\GameOfLifeFields\\Bot";
+      File[] files = new File(path).listFiles(filter);
+      GameInfo[] gameInfo = new GameInfo[files.length];
+      try {
+        for (int i = 0; i < files.length; i++) {
+          String fileName = files[i].getName();
+          BufferedReader reader = new BufferedReader(new FileReader(files[i]));
+          while (reader.readLine() != null) {
+            figureCount++;
+          }
+          gameInfo[i] = new GameInfo(fileName, figureCount);
+          figureCount = 0;
+        }
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }
+      
+      long time = System.currentTimeMillis();
+      new ScalaSort().sort(gameInfo);
+      time = time - System.currentTimeMillis();
+      new SortTable(gameInfo, Long.toString(time));
+    }
+  }
+  
 
 
   /** Change rendering speed. Press UP to speed up the rendering */
@@ -452,13 +550,17 @@ public class LifeWindow {
         lifePane.repaint();
       }
 
+      if (event.getKeyCode() == KeyEvent.VK_SPACE) {
+        lifePane.repaint();
+      }
+
       if (event.getKeyCode() == KeyEvent.VK_UP) {
-        lifePane.setDelay(lifePane.getDelay() - 5);
+        lifePane.setDelay(lifePane.getDelay() - 1);
         delay.setText("  Delay:" + lifePane.getDelay());
       }
 
       if (event.getKeyCode() == KeyEvent.VK_DOWN) {
-        lifePane.setDelay(lifePane.getDelay() + 5);
+        lifePane.setDelay(lifePane.getDelay() + 1);
         delay.setText("  Delay:" + lifePane.getDelay());
       }
     }
@@ -466,7 +568,5 @@ public class LifeWindow {
     public void keyTyped(KeyEvent event) {}
 
     public void keyReleased(KeyEvent event) {}
-
-
   }
 }

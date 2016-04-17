@@ -9,10 +9,10 @@ import GameOfLifeNotation.LifeAreaInformation;
  */
 public class LifeArea {
   /** Information about current generation of life */
-  private byte[][] currentGeneration = null;
+  private byte currentGeneration[][] = null;
 
   /** Information about next generation of life */
-  private byte[][] nextGeneration = null;
+  private byte nextGeneration[][] = null;
 
   /** Width of the playing field */
   private int width;
@@ -22,7 +22,7 @@ public class LifeArea {
   private int cellSize;
 
   /** Coordinates of all neighboring cells */
-  private byte[][] neighbourCell = null;
+  private byte neighbourCell[][] = null;
 
   /**
    * Creates an object of class LifeArea
@@ -76,11 +76,10 @@ public class LifeArea {
    * @see LifeArea#randomField()
    */
   public void randomField() {
-    for (int i = 0; i < width; i++) {
+    for (int i = 0; i < width; i++)
       for (int j = 0; j < height; j++) {
         currentGeneration[i][j] = (int) (Math.random() * 2) == 0 ? (byte) 1 : (byte) 0;
       }
-    }
   }
 
   /**
@@ -100,7 +99,7 @@ public class LifeArea {
 
   /**
    * Setting new field parameters
-   * 
+   * @param area LifeAreaInformation
    * @see LifeArea#setField(LifeAreaInformation)
    */
   public void setField(LifeAreaInformation area) {
@@ -136,7 +135,7 @@ public class LifeArea {
         nextGeneration[i][j] = newCellState(currentGeneration[i][j], count);
       }
 
-    byte[][] temp = currentGeneration;
+    byte temp[][] = currentGeneration;
     currentGeneration = nextGeneration;
     nextGeneration = temp;
   }
@@ -148,12 +147,12 @@ public class LifeArea {
    * @see LifeArea#X(short)
    */
   private short X(short x) {
-    if (x == -1) {
+    if (x == -1)
       return (short) (width - 1);
-    }
-    if (x == width) {
+
+    if (x == width)
       return (short) 0;
-    }
+
     return x;
   }
 
@@ -164,12 +163,12 @@ public class LifeArea {
    * @see LifeArea#Y(short)
    **/
   private short Y(short y) {
-    if (y == -1) {
+    if (y == -1)
       return (short) (height - 1);
-    }
-    if (y == height) {
+
+    if (y == height)
       return (short) 0;
-    }
+
     return y;
   }
 
@@ -184,8 +183,7 @@ public class LifeArea {
   private byte countOfNeighbour(int x, int y) {
     byte count = 0;
     short posX, posY;
-    int neighbourCount = 8;
-    for (int i = 0; i < neighbourCount; i++) {
+    for (int i = 0; i < 8; i++) {
       posX = X((short) (x + neighbourCell[i][0]));
       posY = Y((short) (y + neighbourCell[i][1]));
       count += currentGeneration[posX][posY];
@@ -202,19 +200,15 @@ public class LifeArea {
    */
   private byte newCellState(byte cellSelf, byte neighbourCount) {
     if (cellSelf == 0) {
-      if (neighbourCount == 3) {
+      if (neighbourCount == 3)
         return (byte) 1;
-      }
-      else {
+      else
         return (byte) 0;
-      }
     } else {
-      if (neighbourCount == 2 || neighbourCount == 3) {
+      if (neighbourCount == 2 || neighbourCount == 3)
         return (byte) 1;
-      }
-      else {
+      else
         return (byte) 0;
-      }
     }
   }
 }
