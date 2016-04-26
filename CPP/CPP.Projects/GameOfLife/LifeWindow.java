@@ -1,21 +1,21 @@
-// класс для создания окна приложения
 package GameOfLife;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Random;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import GameInformation.GameInfo;
-import GameInformation.JavaSort;
-import GameInformation.ScalaSort;
-import GameInformation.SortTable;
+import GameInformation.*;
 import GameOfLifeNotation.Figure;
 import GameOfLifeNotation.LifeAreaInformation;
 import GameOfLifeNotation.LifeAreaNotation;
+import GameOfLifeStatistics.JavaSort;
+import GameOfLifeStatistics.ScalaSort;
+import GameOfLifeStatistics.ScalaStatistic;
+import GameOfLifeStatistics.SortTable;
+import GameOfLifeStatistics.NotationGenerator;
 
 /** Class render the window contents */
 public class LifeWindow {
@@ -34,7 +34,6 @@ public class LifeWindow {
 
   /**
    * It draws the window and associates it with listeners
-   * 
    * @param title window title
    */
   public LifeWindow(String title) {
@@ -135,8 +134,29 @@ public class LifeWindow {
     javaSortButton.addActionListener(new JavaSortButtonListener());
     scalaSortButton = new JMenuItem("Sort in Scala");
     scalaSortButton.addActionListener(new ScalaSortButtonListener());
+    
+    JMenu saveGenerator = new JMenu("Save generator");
+    JMenuItem ten = new JMenuItem("10");
+    ten.addActionListener(new SaveGeneratorListener());
+    JMenuItem thousand = new JMenuItem("1000");
+    thousand.addActionListener(new SaveGeneratorListener());
+    JMenuItem tenThousand = new JMenuItem("10000");
+    tenThousand.addActionListener(new SaveGeneratorListener());
+
+    saveGenerator.add(ten);
+    saveGenerator.add(thousand);
+    saveGenerator.add(tenThousand);
+    
+    JMenuItem gameStatistics = new JMenuItem("Statistics");
+    gameStatistics.addActionListener(new GameStatistictsListener());
+    
+    statistics.add(gameStatistics);
+    statistics.add(saveGenerator);
     statistics.add(javaSortButton);
     statistics.add(scalaSortButton);
+    
+
+    
     menuBar.add(statistics);
 
 
@@ -331,11 +351,14 @@ public class LifeWindow {
           String fileName = temp.getPath().replaceAll(".bot", "");
           fileName = fileName.replaceAll(".not", "");
           File file = new File(fileName + ".bot");
-          FileInputStream fileStream = new FileInputStream(file);
-          ObjectInputStream objectStream = new ObjectInputStream(fileStream);
-          LifeAreaInformation areaInformation = new LifeAreaInformation();
-          areaInformation = (LifeAreaInformation) objectStream.readObject();
-          lifePane.getLifeArea().setField(areaInformation);
+          ObjectInputStream objectStream = null;
+          if (file.exists()) {
+            FileInputStream fileStream = new FileInputStream(file);
+            objectStream = new ObjectInputStream(fileStream);
+            LifeAreaInformation areaInformation = new LifeAreaInformation();
+            areaInformation = (LifeAreaInformation) objectStream.readObject();
+            lifePane.getLifeArea().setField(areaInformation);
+          }
           frame.setPreferredSize(new Dimension(
               lifePane.getLifeArea().getWidth() * (lifePane.getCellSize() + lifePane.getGapSize())
                   + 2 * lifePane.getGapSize() + 5,
@@ -360,7 +383,9 @@ public class LifeWindow {
             areaNotation.addFigure(new Figure(x, y, number));
           }
           reader.close();
-          objectStream.close();
+          if (objectStream != null) {
+            objectStream.close();
+          }
         } catch (Exception exception) {
           exception.printStackTrace();
         }
@@ -484,6 +509,45 @@ public class LifeWindow {
       }
     }
   };
+  /**
+   * Gathering of game statistics 
+   */
+  private class GameStatistictsListener implements ActionListener {
+    public void actionPerformed(ActionEvent e) {
+      String tempStr = "C:\\Users\\Матвей\\Documents\\GameOfLifeFields\\Bot";
+      String[] oneMove = null;
+      File[] files = new File(tempStr).listFiles(filter);
+      GameInfo[] gameInfo = new GameInfo[files.length];
+
+      int figureCount = 0;
+      int[] everyFigureCount;
+     
+      BufferedReader reader;
+      try {
+        for (int i = 0; i < files.length; i++) {
+          everyFigureCount = new int[Form.count];
+          reader = new BufferedReader(new FileReader(files[i]));
+          reader.readLine();
+          while (true) {
+            tempStr = reader.readLine();
+            if(tempStr == null){
+              break;
+            }
+            figureCount++;
+            oneMove = tempStr.split("/");
+            everyFigureCount[Integer.parseInt(oneMove[2])]++;
+            
+          }     
+          gameInfo[i] = new GameInfo(files[i].getName(), figureCount, everyFigureCount);
+          figureCount = 0;
+        }
+
+      } catch (IOException ex) {
+          ex.printStackTrace();
+      }
+      new ScalaStatistic().getStatistic(gameInfo);
+    }
+  }
 
   private class JavaSortButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
@@ -491,6 +555,10 @@ public class LifeWindow {
       String path = "C:\\Users\\Матвей\\Documents\\GameOfLifeFields\\Bot";
       File[] files = new File(path).listFiles(filter);
       GameInfo[] gameInfo = new GameInfo[files.length];
+
+      JavaSort javaSort = new JavaSort();
+      long time = System.currentTimeMillis();
+
       try {
         for (int i = 0; i < files.length; i++) {
           String fileName = files[i].getName();
@@ -504,10 +572,11 @@ public class LifeWindow {
       } catch (IOException ex) {
         ex.printStackTrace();
       }
-      long time = System.currentTimeMillis();
-      new JavaSort().qSort(gameInfo, 0, gameInfo.length - 1);
-      time = time - System.currentTimeMillis();
-      new SortTable(gameInfo, Long.toString(time));
+
+      javaSort.qSort(gameInfo, 0, gameInfo.length - 1);
+
+      time = System.currentTimeMillis() - time;
+      new SortTable("Java", gameInfo, Long.toString(time));
 
     }
   }
@@ -518,6 +587,10 @@ public class LifeWindow {
       String path = "C:\\Users\\Матвей\\Documents\\GameOfLifeFields\\Bot";
       File[] files = new File(path).listFiles(filter);
       GameInfo[] gameInfo = new GameInfo[files.length];
+
+      ScalaSort scalaSort = new ScalaSort();
+      long time = System.currentTimeMillis();
+
       try {
         for (int i = 0; i < files.length; i++) {
           String fileName = files[i].getName();
@@ -531,14 +604,21 @@ public class LifeWindow {
       } catch (IOException ex) {
         ex.printStackTrace();
       }
-      
-      long time = System.currentTimeMillis();
-      new ScalaSort().sort(gameInfo);
-      time = time - System.currentTimeMillis();
-      new SortTable(gameInfo, Long.toString(time));
+      scalaSort.sort(gameInfo);
+
+      time = System.currentTimeMillis() - time;
+      new SortTable("Scala", gameInfo, Long.toString(time));
     }
+
   }
-  
+
+
+  private class SaveGeneratorListener implements ActionListener {
+    public void actionPerformed(ActionEvent event) {
+      NotationGenerator.GenerateSaves(Integer.parseInt(event.getActionCommand()));
+    }
+
+  }
 
 
   /** Change rendering speed. Press UP to speed up the rendering */

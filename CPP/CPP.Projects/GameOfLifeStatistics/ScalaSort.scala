@@ -1,5 +1,8 @@
-package GameInformation
+package GameOfLifeStatistics
 
+import GameInformation.GameInfo
+
+/** QSort on Scala */
 class ScalaSort {
   def sort(gameArray: Array[GameInfo]) {
     def swap(a: Int, b: Int) {
@@ -7,15 +10,16 @@ class ScalaSort {
       gameArray(a) = gameArray(b)
       gameArray(b) = temp
     }
+    
     def quickSort(begin: Int, end: Int) {
       val temp = gameArray((begin + end) / 2).getFigureCount
       var i = begin
       var j = end
       while (i <= j) {
-        while (gameArray(i).getFigureCount() > temp) {
+        while (gameArray(i).getFigureCount > temp) {
           i += 1
         }
-        while (gameArray(j).getFigureCount() < temp) {
+        while (gameArray(j).getFigureCount < temp) {
           j -= 1
         }
         if (i <= j) {

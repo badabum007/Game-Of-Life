@@ -2,6 +2,8 @@ package GameOfLife;
 
 import javax.swing.SwingUtilities;
 
+
+
 /**
  * Game launcher
  * @author Zhartun Matthew

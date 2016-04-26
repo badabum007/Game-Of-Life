@@ -282,7 +282,7 @@ public class LifePane extends JPanel {
       repaint();
     }
   }
-
+  /** Thread to run the saved bot */
   private class SavedBotThread implements Runnable {
     public void run() {
       int x = 0, y = 0, number = 0;
@@ -310,7 +310,9 @@ public class LifePane extends JPanel {
     }
 
   }
-
+  /** Painting random the figure on Gamefield
+   * @return Figure - coordinates and figure number
+   *  */
   public Figure paintFigure() {
     Form form = new Form();
     int tempFigure[][] = null, number = 0;
@@ -325,7 +327,7 @@ public class LifePane extends JPanel {
     }
     return new Figure(x, y, number);
   }
-
+  /** Panting figure */
   public void paintFigure(int x, int y, int number) {
     Form form = new Form();
     int tempFigure[][] = null;

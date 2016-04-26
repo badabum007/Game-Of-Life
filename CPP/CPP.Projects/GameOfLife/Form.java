@@ -1,7 +1,7 @@
 package GameOfLife;
-
+/** Class store all figure, what bot can paint */
 public class Form {
-  public int count = 7;
+  public static int count = 7;
   private int glider1[][] = 
     {
         {0, 1},
@@ -73,7 +73,10 @@ public class Form {
         {3,2},
         {3,3}
     };
-  
+  /** Return figure 
+   * @param i - figure number
+   * @return int[][] - array cells
+   * */
   public int[][] getFigure(int i)
   {
     switch (i)
@@ -94,5 +97,27 @@ public class Form {
         return bigsquare;   
     }
     return glider1;
+  }
+  
+  public static String getName(int i)
+  {
+    switch (i)
+    {
+      case 0:
+        return "Glider NORTH-WEST";
+      case 1:
+        return "Glider SOUTH-WEST";
+      case 2:
+        return "Glider NORTH-EAST";
+      case 3:
+        return "Glider SOUTH-EAST";
+      case 4:
+        return "Square";
+      case 5:
+        return "Rhombus";
+      case 6:
+        return "Big square";   
+    }
+    return "";
   }
 }
