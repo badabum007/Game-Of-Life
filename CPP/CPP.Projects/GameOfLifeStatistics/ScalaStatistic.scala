@@ -10,8 +10,8 @@ import GameOfLife.Form;
  */
 class ScalaStatistic {
   /**
- 	* Find count of every figure
- 	*/
+   * Find count of every figure
+   */
   def getStatistic(gameInfo: Array[GameInfo]){
     val tempArray: ArrayBuffer[GameInfo] = ArrayBuffer()
     val statistic = new Array[Int](Form.count)
@@ -35,8 +35,8 @@ class ScalaStatistic {
     new StatisticTable("Statistic", statistic, maxIndex)
   }
   /**
- 	* Find most common figure figure
- 	*/
+   * Find most common figure figure
+   */
   def findMax(stat: Array[Int], size: Int): Int ={
     var indexOfMaxValue = 0
     var max = 0
