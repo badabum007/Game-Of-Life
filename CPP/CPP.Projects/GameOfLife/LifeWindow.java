@@ -241,7 +241,7 @@ public class LifeWindow {
     public void actionPerformed(ActionEvent event) {
       synchronized (lifePane.getLifeArea()) {
         try {
-          String homeDir = "C:\\Users\\Ã‡Ú‚ÂÈ\\Documents\\GameOfLifeFields\\Player";
+          String homeDir = "C:\\Users\\√å√†√≤√¢√•√©\\Documents\\GameOfLifeFields\\Player";
           JFileChooser fileChooser = new JFileChooser();
           fileChooser.setCurrentDirectory(new File(homeDir));
           fileChooser.showSaveDialog(frame);
@@ -268,7 +268,7 @@ public class LifeWindow {
         return;
       synchronized (lifePane.getLifeArea()) {
         try {
-          String homeDir = "C:\\Users\\Ã‡Ú‚ÂÈ\\Documents\\GameOfLifeFields\\Bot";
+          String homeDir = "C:\\Users\\√å√†√≤√¢√•√©\\Documents\\GameOfLifeFields\\Bot";
           JFileChooser fileChooser = new JFileChooser();
           fileChooser.setCurrentDirectory(new File(homeDir));
           fileChooser.showSaveDialog(frame);
@@ -313,7 +313,7 @@ public class LifeWindow {
     public void actionPerformed(ActionEvent event) {
       synchronized (lifePane.getLifeArea()) {
         try {
-          String homeDir = "C:\\Users\\Ã‡Ú‚ÂÈ\\Documents\\GameOfLifeFields\\Player";
+          String homeDir = "C:\\Users\\√å√†√≤√¢√•√©\\Documents\\GameOfLifeFields\\Player";
           JFileChooser fileChooser = new JFileChooser();
           fileChooser.setCurrentDirectory(new File(homeDir));
           fileChooser.showOpenDialog(frame);
@@ -344,7 +344,7 @@ public class LifeWindow {
     public void actionPerformed(ActionEvent event) {
       synchronized (lifePane.getLifeArea()) {
         try {
-          String homeDir = "C:\\Users\\Ã‡Ú‚ÂÈ\\Documents\\GameOfLifeFields\\Bot";
+          String homeDir = "C:\\Users\\√å√†√≤√¢√•√©\\Documents\\GameOfLifeFields\\Bot";
           JFileChooser fileChooser = new JFileChooser();
           fileChooser.setCurrentDirectory(new File(homeDir));
           fileChooser.showOpenDialog(frame);
@@ -516,7 +516,7 @@ public class LifeWindow {
    */
   private class GameStatistictsListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
-      String tempStr = "C:\\Users\\Ã‡Ú‚ÂÈ\\Documents\\GameOfLifeFields\\Bot";
+      String tempStr = "C:\\Users\\√å√†√≤√¢√•√©\\Documents\\GameOfLifeFields\\Bot";
       String[] oneMove = null;
       File[] files = new File(tempStr).listFiles(filter);
       GameInfo[] gameInfo = new GameInfo[files.length];
@@ -554,7 +554,7 @@ public class LifeWindow {
   private class JavaSortButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
       int figureCount = 0;
-      String path = "C:\\Users\\Ã‡Ú‚ÂÈ\\Documents\\GameOfLifeFields\\Bot";
+      String path = "C:\\Users\\√å√†√≤√¢√•√©\\Documents\\GameOfLifeFields\\Bot";
       File[] files = new File(path).listFiles(filter);
       GameInfo[] gameInfo = new GameInfo[files.length];
 
@@ -586,7 +586,7 @@ public class LifeWindow {
   private class ScalaSortButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
       int figureCount = 0;
-      String path = "C:\\Users\\Ã‡Ú‚ÂÈ\\Documents\\GameOfLifeFields\\Bot";
+      String path = "C:\\Users\\√å√†√≤√¢√•√©\\Documents\\GameOfLifeFields\\Bot";
       File[] files = new File(path).listFiles(filter);
       GameInfo[] gameInfo = new GameInfo[files.length];
 
@@ -616,7 +616,7 @@ public class LifeWindow {
 
   private class NotationTransformator implements ActionListener {
     public void actionPerformed(ActionEvent e) {
-      String homeDir = "C:\\Users\\Ã‡Ú‚ÂÈ\\Documents\\GameOfLifeFields\\Bot";
+      String homeDir = "C:\\Users\\√å√†√≤√¢√•√©\\Documents\\GameOfLifeFields\\Bot";
       JFileChooser fileChooser = new JFileChooser();
       fileChooser.setCurrentDirectory(new File(homeDir));
       fileChooser.showOpenDialog(frame);
@@ -626,12 +626,12 @@ public class LifeWindow {
       File notation = new File(fileName + ".not");
 
       NotationTransformer transformer = new NotationTransformer();
-      int data[] = new int[3];
+      int[] data = new int[3];
       int size = 0;
       try {
         BufferedReader reader = new BufferedReader(new FileReader(notation));
         String tempStr = null;
-        String coordinates[] = new String[3];
+        String[] coordinates = new String[3];
         while (true) {
           tempStr = reader.readLine();
           if (tempStr == null) {

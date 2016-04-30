@@ -318,7 +318,8 @@ public class LifePane extends JPanel {
    */
   public Figure paintFigure() {
     Form form = new Form();
-    int tempFigure[][] = null, number = 0;
+    int[][] tempFigure = null;
+    int number = 0;
     int x = (int) (Math.random() * lifeArea.getWidth()) - 5;
     int y = (int) (Math.random() * lifeArea.getHeight()) - 5;
     number = (int) (Math.random() * form.count);

@@ -12,7 +12,7 @@ public class LifeAreaInformation implements Serializable {
   private static final long serialVersionUID = 8535496533011692775L;
   private int width;
   private int height;
-  private byte field[][];
+  private byte[][] field;
   private int cellSize;
 
   public LifeAreaInformation() {
@@ -29,7 +29,7 @@ public class LifeAreaInformation implements Serializable {
     this.field = area.getCurrentGeneration();
   }
 
-  public LifeAreaInformation(int width, int height, int size, byte field[][]) {
+  public LifeAreaInformation(int width, int height, int size, byte[][] field) {
     this.width = width;
     this.height = height;
     this.cellSize = size;

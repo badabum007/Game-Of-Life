@@ -3,19 +3,19 @@ package GameOfLife;
 /** Class store all figure, what bot can paint */
 public class Form {
   public static int count = 7;
-  private int glider1[][] = {{0, 1}, {1, 0}, {2, 0}, {2, 1}, {2, 2}};
+  private int[][] glider1 = {{0, 1}, {1, 0}, {2, 0}, {2, 1}, {2, 2}};
 
-  private int glider2[][] = {{0, 1}, {1, 2}, {2, 0}, {2, 1}, {2, 2}};
+  private int[][] glider2 = {{0, 1}, {1, 2}, {2, 0}, {2, 1}, {2, 2}};
 
-  private int glider3[][] = {{0, 0}, {0, 1}, {0, 2}, {1, 0}, {2, 1}};
+  private int[][] glider3 = {{0, 0}, {0, 1}, {0, 2}, {1, 0}, {2, 1}};
 
-  private int glider4[][] = {{0, 0}, {0, 1}, {0, 2}, {1, 2}, {2, 1}};
+  private int[][] glider4 = {{0, 0}, {0, 1}, {0, 2}, {1, 2}, {2, 1}};
 
-  private int square[][] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+  private int[][] square = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
 
-  private int rhombus[][] = {{0, 1}, {1, 0}, {1, 2}, {2, 1}};
+  private int[][] rhombus = {{0, 1}, {1, 0}, {1, 2}, {2, 1}};
 
-  private int bigsquare[][] = {{0, 0}, {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2}, {1, 3},
+  private int[][] bigsquare = {{0, 0}, {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2}, {1, 3},
       {2, 0}, {2, 1}, {2, 2}, {2, 3}, {3, 0}, {3, 1}, {3, 2}, {3, 3}};
 
   /**
