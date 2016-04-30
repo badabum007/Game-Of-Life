@@ -16,6 +16,7 @@ import GameOfLifeStatistics.ScalaSort;
 import GameOfLifeStatistics.ScalaStatistic;
 import GameOfLifeStatistics.SortTable;
 import GameOfLifeStatistics.NotationGenerator;
+import GameOfLifeStatistics.NotationTransformer;
 
 /** Class render the window contents */
 public class LifeWindow {
@@ -27,13 +28,12 @@ public class LifeWindow {
   private JMenuItem startStopBotButton = null;
   private JMenuItem startStopSavedBotButton = null;
   private JMenuItem clearButton = null;
-  private JMenuItem javaSortButton = null;
-  private JMenuItem scalaSortButton = null;
   private JLabel delay = null;
   private LifeAreaNotation areaNotation = null;
 
   /**
    * It draws the window and associates it with listeners
+   * 
    * @param title window title
    */
   public LifeWindow(String title) {
@@ -130,11 +130,13 @@ public class LifeWindow {
     menuBar.add(menuSettings);
 
     JMenu statistics = new JMenu("Statistics");
-    javaSortButton = new JMenuItem("Sort in Java");
+    JMenuItem javaSortButton = new JMenuItem("Sort in Java");
     javaSortButton.addActionListener(new JavaSortButtonListener());
-    scalaSortButton = new JMenuItem("Sort in Scala");
+    JMenuItem scalaSortButton = new JMenuItem("Sort in Scala");
     scalaSortButton.addActionListener(new ScalaSortButtonListener());
-    
+    JMenuItem transformNotation = new JMenuItem("Transform notation");
+    transformNotation.addActionListener(new NotationTransformator());
+
     JMenu saveGenerator = new JMenu("Save generator");
     JMenuItem ten = new JMenuItem("10");
     ten.addActionListener(new SaveGeneratorListener());
@@ -146,17 +148,16 @@ public class LifeWindow {
     saveGenerator.add(ten);
     saveGenerator.add(thousand);
     saveGenerator.add(tenThousand);
-    
+
     JMenuItem gameStatistics = new JMenuItem("Statistics");
     gameStatistics.addActionListener(new GameStatistictsListener());
-    
+
     statistics.add(gameStatistics);
     statistics.add(saveGenerator);
     statistics.add(javaSortButton);
     statistics.add(scalaSortButton);
-    
+    statistics.add(transformNotation);
 
-    
     menuBar.add(statistics);
 
 
@@ -282,7 +283,7 @@ public class LifeWindow {
           File notation = new File(fileName + ".not");
           FileWriter fileWriter = new FileWriter(notation);
           fileWriter.write(Integer.toString(lifePane.getLifeArea().getWidth()));
-          fileWriter.write(":");
+          fileWriter.write("/");
           fileWriter.write(Integer.toString(lifePane.getLifeArea().getHeight()));
           fileWriter.write("\n");
           Figure figure = null;
@@ -509,8 +510,9 @@ public class LifeWindow {
       }
     }
   };
+
   /**
-   * Gathering of game statistics 
+   * Gathering of game statistics
    */
   private class GameStatistictsListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
@@ -521,7 +523,7 @@ public class LifeWindow {
 
       int figureCount = 0;
       int[] everyFigureCount;
-     
+
       BufferedReader reader;
       try {
         for (int i = 0; i < files.length; i++) {
@@ -530,20 +532,20 @@ public class LifeWindow {
           reader.readLine();
           while (true) {
             tempStr = reader.readLine();
-            if(tempStr == null){
+            if (tempStr == null) {
               break;
             }
             figureCount++;
             oneMove = tempStr.split("/");
             everyFigureCount[Integer.parseInt(oneMove[2])]++;
-            
-          }     
+
+          }
           gameInfo[i] = new GameInfo(files[i].getName(), figureCount, everyFigureCount);
           figureCount = 0;
         }
 
       } catch (IOException ex) {
-          ex.printStackTrace();
+        ex.printStackTrace();
       }
       new ScalaStatistic().getStatistic(gameInfo);
     }
@@ -612,6 +614,44 @@ public class LifeWindow {
 
   }
 
+  private class NotationTransformator implements ActionListener {
+    public void actionPerformed(ActionEvent e) {
+      String homeDir = "C:\\Users\\Матвей\\Documents\\GameOfLifeFields\\Bot";
+      JFileChooser fileChooser = new JFileChooser();
+      fileChooser.setCurrentDirectory(new File(homeDir));
+      fileChooser.showOpenDialog(frame);
+      File temp = fileChooser.getSelectedFile();
+      String fileName = temp.getPath().replaceAll(".bot", "");
+      fileName = fileName.replaceAll(".not", "");
+      File notation = new File(fileName + ".not");
+
+      NotationTransformer transformer = new NotationTransformer();
+      int data[] = new int[3];
+      int size = 0;
+      try {
+        BufferedReader reader = new BufferedReader(new FileReader(notation));
+        String tempStr = null;
+        String coordinates[] = new String[3];
+        while (true) {
+          tempStr = reader.readLine();
+          if (tempStr == null) {
+            System.out.println(transformer.parse(size));
+            break;
+          }
+          size++;
+          coordinates = tempStr.split("/");
+          data[0] = Integer.parseInt(coordinates[0]);
+          data[1] = Integer.parseInt(coordinates[1]);
+          data[2] = coordinates.length == 3 ? Integer.parseInt(coordinates[2]) : -1;
+          System.out.println(transformer.parse(data));
+        }
+        reader.close();
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }
+    }
+
+  }
 
   private class SaveGeneratorListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {

@@ -4,7 +4,7 @@ public class Figure {
   private int X = 0;
   private int Y = 0;
   private int number = 0;
-  
+
   public Figure(int X, int Y, int N) {
     this.X = X;
     this.Y = Y;
@@ -28,7 +28,7 @@ public class Figure {
   public int getY() {
     return Y;
   }
-  
+
   public int getNumber() {
     return number;
   }
@@ -40,8 +40,8 @@ public class Figure {
   public void setY(int y) {
     Y = y;
   }
-  
-  public void setNumber(int number){
+
+  public void setNumber(int number) {
     this.number = number;
   }
 }

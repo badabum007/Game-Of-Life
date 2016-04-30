@@ -10,7 +10,7 @@ class ScalaSort {
       gameArray(a) = gameArray(b)
       gameArray(b) = temp
     }
-    
+
     def quickSort(begin: Int, end: Int) {
       val temp = gameArray((begin + end) / 2).getFigureCount
       var i = begin

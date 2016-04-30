@@ -18,24 +18,23 @@ public class NotationGenerator {
     FileWriter fileWriter = null;
     try {
       for (int i = 1; i <= count; i++) {
-        movesCount = (int) ( Math.random() * 90) + 10;
+        movesCount = (int) (Math.random() * 90) + 10;
         File newSave = new File("C:\\Users\\Матвей\\Documents\\GameOfLifeFields\\Bot\\gamesave"
             + Integer.toString(i) + ".not");
         fileWriter = new FileWriter(newSave);
         fileWriter.write("100/70\n");
         while (movesCount-- != 0) {
-          posX = (int) ( Math.random() * WIDTH);
-          posY = (int) ( Math.random() * HEIGHT);
-          formNumber = (int) ( Math.random() * FORM_COUNT);
-          oneMove = Integer.toString(posX) + "/" +
-                    Integer.toString(posY) + "/" + 
-                    Integer.toString(formNumber) + "\n";
+          posX = (int) (Math.random() * WIDTH);
+          posY = (int) (Math.random() * HEIGHT);
+          formNumber = (int) (Math.random() * FORM_COUNT);
+          oneMove = Integer.toString(posX) + "/" + Integer.toString(posY) + "/"
+              + Integer.toString(formNumber) + "\n";
           fileWriter.write(oneMove);
         }
         fileWriter.write("");
         fileWriter.close();
       }
-      
+
     } catch (IOException ex) {
       ex.printStackTrace();
     }

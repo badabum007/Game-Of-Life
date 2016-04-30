@@ -99,6 +99,7 @@ public class LifeArea {
 
   /**
    * Setting new field parameters
+   * 
    * @param area LifeAreaInformation
    * @see LifeArea#setField(LifeAreaInformation)
    */
@@ -202,15 +203,13 @@ public class LifeArea {
     if (cellSelf == 0) {
       if (neighbourCount == 3) {
         return (byte) 1;
-      }
-      else {
+      } else {
         return (byte) 0;
       }
     } else {
       if (neighbourCount == 2 || neighbourCount == 3) {
         return (byte) 1;
-      }
-      else {
+      } else {
         return (byte) 0;
       }
     }

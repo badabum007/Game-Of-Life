@@ -3,9 +3,11 @@ package GameOfLifeStatistics;
 import java.util.Random;
 
 import GameInformation.GameInfo;
+
 /** QSort on Java */
 public class JavaSort {
   static Random rand = new Random();
+
   public void qSort(GameInfo[] array, int begin, int end) {
     int i = begin;
     int j = end;
